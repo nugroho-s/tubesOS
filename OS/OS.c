@@ -12,7 +12,7 @@ int main(int argc,char* argv[]){
 	int jpage = atoi(argv[1]);
 	int jframe = atoi(argv[2]);
 	int pidOS = getpid();
-	char* command = "./mmu ";
+	char* command = "./MMU.ls ";
 	char* buffer = malloc(50);
 	strcpy(buffer,command);
 	strcat(buffer,argv[1]);
