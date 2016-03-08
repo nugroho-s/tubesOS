@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "PageTable.h"
+
+page_table_entry P;
 
 int main(int argc,char* argv[]){
 	if (argc != 3){
