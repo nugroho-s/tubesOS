@@ -4,6 +4,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include "PageTable.h"
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+#include <ctype.h>
+#include <errno.h>
+#include <sys/param.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/stat.h>
+#include "PageTable.h"
 
 page_table_entry P;
 
@@ -15,6 +26,14 @@ int main(int argc,char* argv[]){
 	int jpage = atoi(argv[1]);
 	int jframe = atoi(argv[2]);
 	int pidOS = getpid();
+	int shmid;
+	int NumberOfPages = jpage;
+	printf("from OS %d\n",NumberOfPages);
+	if ((shmid = shmget(pidOS, NumberOfPages*sizeof(page_table_entry), IPC_CREAT|0)) < 0) {
+		printf("1\n");
+        perror("shmget");
+        exit(1);
+    }
 	char* command = "./MMU.ls ";
 	char* buffer = malloc(50);
 	strcpy(buffer,command);

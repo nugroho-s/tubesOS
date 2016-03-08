@@ -40,12 +40,9 @@ int main(int argc,char *argv[]) {
     int RSIndex;
     int Mode;
     int Page;
-
     if (argc < 2 ||
 (OSPID = SharedMemoryKey = atoi(argv[argc-1])) == 0  ||
 (NumberOfPages = atoi(argv[1])) == 0) {
-		printf("%d\n",argc);
-		printf("%d\n",OSPID);
         printf("Usage:");
         exit(EXIT_FAILURE);
     }
@@ -54,7 +51,7 @@ int main(int argc,char *argv[]) {
     if ((SegmentID = shmget(SharedMemoryKey,
 NumberOfPages*sizeof(page_table_entry),0)) == -1 ||
 (PageTable = (page_table_pointer)shmat(SegmentID,NULL,0)) == NULL) {
-	printf("%d\n", SegmentID);
+	printf("%d\n", NumberOfPages*sizeof(page_table_entry));
         perror("ERROR: Could not get page table");
         exit(EXIT_FAILURE);
     }
@@ -64,7 +61,7 @@ NumberOfPages*sizeof(page_table_entry),0)) == -1 ||
         printf("ERROR: Could not initialize continue handler\n");
         exit(EXIT_FAILURE);
     }
-
+	printf("from MMU: %d\n",NumberOfPages);
     printf("Initialized page table:\n");
     PrintPageTable(PageTable,NumberOfPages);
     printf("\n");
