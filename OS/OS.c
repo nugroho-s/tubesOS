@@ -41,17 +41,29 @@ int main(int argc,char* argv[]){
 	int shmid;
 	int NumberOfPages = jpage;
 	printf("from OS %d\n",NumberOfPages);
-	if ((shmid = shmget(pidOS, NumberOfPages*sizeof(page_table_entry), IPC_CREAT|0)) < 0) {
+	if ((shmid = shmget(pidOS, NumberOfPages*sizeof(page_table_entry), IPC_CREAT|0666)) < 0) {
 		printf("1\n");
         perror("shmget");
         exit(1);
     }
-    //page_table_pointer = malloc(NumberOfPages*sizeof(page_table_entry));
+    page_table_pointer shm;
+    if ((shm = shmat(shmid, NULL, 0)) == (void*)-1) {
+        perror("shmat");
+        exit(1);
+    }
+    page_table_pointer s = shm;
+    int i;
+    for (i=0;i<NumberOfPages;i++){
+		s[i].Valid = 1;
+		s[i].Frame = 0;
+		s[i].Dirty = 0;
+		s[i].Requested = 0;
+	}
 	char* command = "./MMU.ls ";
 	char* buffer = malloc(50);
 	strcpy(buffer,command);
 	strcat(buffer,argv[1]);
-	strcat(buffer," W2 ");
+	strcat(buffer," W1 ");
 	char PID[5];
 	sprintf(PID, "%d", pidOS);
 	strcat(buffer,PID);
