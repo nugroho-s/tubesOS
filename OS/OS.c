@@ -18,6 +18,18 @@
 
 page_table_entry P;
 
+void PrintPageTable(page_table_entry PageTable[],int NumberOfPages) {
+
+    int Index;
+	printf("%d\n",NumberOfPages);
+    for (Index =  0;Index < NumberOfPages;Index++) {
+        printf("%2d: Valid=%1d Frame=%2d Dirty=%1d Requested=%1d\n",Index,
+PageTable[Index].Valid,PageTable[Index].Frame,PageTable[Index].Dirty,
+PageTable[Index].Requested);
+    }
+
+}
+
 int main(int argc,char* argv[]){
 	if (argc != 3){
 		printf("error, argument doesn't match\n");
@@ -34,6 +46,7 @@ int main(int argc,char* argv[]){
         perror("shmget");
         exit(1);
     }
+    //page_table_pointer = malloc(NumberOfPages*sizeof(page_table_entry));
 	char* command = "./MMU.ls ";
 	char* buffer = malloc(50);
 	strcpy(buffer,command);
