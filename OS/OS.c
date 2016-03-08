@@ -16,6 +16,22 @@
 #include <sys/stat.h>
 #include "PageTable.h"
 
+
+page_table_entry P;
+
+void PrintPageTable(page_table_entry PageTable[],int NumberOfPages) {
+
+    int Index;
+	printf("%d\n",NumberOfPages);
+    for (Index =  0;Index < NumberOfPages;Index++) {
+        printf("%2d: Valid=%1d Frame=%2d Dirty=%1d Requested=%1d\n",Index,
+PageTable[Index].Valid,PageTable[Index].Frame,PageTable[Index].Dirty,
+PageTable[Index].Requested);
+    }
+
+}
+
+
 int main(int argc,char* argv[]){
 	if (argc != 3){
 		printf("error, argument doesn't match\n");
@@ -27,11 +43,24 @@ int main(int argc,char* argv[]){
 	int shmid;
 	int NumberOfPages = jpage;
 	printf("from OS %d\n",NumberOfPages);
-	if ((shmid = shmget(pidOS, NumberOfPages*sizeof(page_table_entry), IPC_CREAT|0)) < 0) {
+	if ((shmid = shmget(pidOS, NumberOfPages*sizeof(page_table_entry), IPC_CREAT|0666)) < 0) {
 		printf("1\n");
         perror("shmget");
         exit(1);
     }
+    page_table_pointer shm;
+    if ((shm = shmat(shmid, NULL, 0)) == (void*)-1) {
+        perror("shmat");
+        exit(1);
+    }
+    page_table_pointer s = shm;
+    int i;
+    for (i=0;i<NumberOfPages;i++){
+		s[i].Valid = 0;
+		s[i].Frame = -1;
+		s[i].Dirty = 0;
+		s[i].Requested = 0;
+	}
 	char* command = "./MMU.ls ";
 	char* buffer = malloc(100);
 	strcpy(buffer,command);
@@ -42,5 +71,6 @@ int main(int argc,char* argv[]){
 	strcat(buffer,PID);
 	printf("%s\n",buffer);
 	system(buffer);
+	
 	return 0;
 }

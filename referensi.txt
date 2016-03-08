@@ -1,1 +1,2 @@
 https://www.cs.cf.ac.uk/Dave/C/node27.html
+http://man7.org/linux/man-pages/man2/shmget.2.html
