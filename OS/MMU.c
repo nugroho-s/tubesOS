@@ -51,7 +51,7 @@ int main(int argc,char *argv[]) {
     if ((SegmentID = shmget(SharedMemoryKey,
 NumberOfPages*sizeof(page_table_entry),0)) == -1 ||
 (PageTable = (page_table_pointer)shmat(SegmentID,NULL,0)) == NULL) {
-	printf("%d\n", NumberOfPages*sizeof(page_table_entry));
+		printf("%d\n", NumberOfPages*sizeof(page_table_entry));
         perror("ERROR: Could not get page table");
         exit(EXIT_FAILURE);
     }
