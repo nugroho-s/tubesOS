@@ -18,6 +18,23 @@ void ContinueHandler(int Signal) {
 //----Nothing to do
 }
 //-----------------------------------------------------------------------------
+page_table_pointer MakePageTable(int NumberOfPages) {
+
+    int Index;
+    
+    page_table_pointer PageTable;
+
+	PageTable = (page_table_pointer) malloc(NumberOfPages*sizeof(page_table_entry));
+
+    for (Index =  0;Index < NumberOfPages;Index++) {
+		PageTable[Index].Valid = 0;
+		PageTable[Index].Frame = 0;
+		PageTable[Index].Dirty = 0;
+		PageTable[Index].Requested = 0;
+    }
+	return PageTable;
+}
+//-----------------------------------------------------------------------------
 void PrintPageTable(page_table_entry PageTable[],int NumberOfPages) {
 
     int Index;
@@ -40,6 +57,7 @@ int main(int argc,char *argv[]) {
     int RSIndex;
     int Mode;
     int Page;
+    PageTable = MakePageTable(NumberOfPages);
     if (argc < 2 ||
 (OSPID = SharedMemoryKey = atoi(argv[argc-1])) == 0  ||
 (NumberOfPages = atoi(argv[1])) == 0) {
@@ -50,7 +68,7 @@ int main(int argc,char *argv[]) {
 //----Create the page table
     if ((SegmentID = shmget(SharedMemoryKey,
 NumberOfPages*sizeof(page_table_entry),0)) == -1 ||
-(PageTable = (page_table_pointer)shmat(SegmentID,NULL,0)) == NULL) {
+(PageTable = (page_table_pointer)shmat(SegmentID,NULL,0666)) == NULL) {
 	printf("%d\n", NumberOfPages*sizeof(page_table_entry));
         perror("ERROR: Could not get page table");
         exit(EXIT_FAILURE);

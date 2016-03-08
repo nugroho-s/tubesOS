@@ -16,8 +16,6 @@
 #include <sys/stat.h>
 #include "PageTable.h"
 
-page_table_entry P;
-
 int main(int argc,char* argv[]){
 	if (argc != 3){
 		printf("error, argument doesn't match\n");
@@ -35,10 +33,10 @@ int main(int argc,char* argv[]){
         exit(1);
     }
 	char* command = "./MMU.ls ";
-	char* buffer = malloc(50);
+	char* buffer = malloc(100);
 	strcpy(buffer,command);
 	strcat(buffer,argv[1]);
-	strcat(buffer," W2 ");
+	strcat(buffer," W2 R3 W3 R4 ");
 	char PID[5];
 	sprintf(PID, "%d", pidOS);
 	strcat(buffer,PID);
