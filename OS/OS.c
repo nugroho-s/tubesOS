@@ -16,8 +16,14 @@
 #include <sys/stat.h>
 #include "PageTable.h"
 
+#define false 0;
+#define true 1;
 
 page_table_entry P;
+page_table_pointer s;
+int frame = 0;
+int NumberOfPages = 0;
+short int finished = false;
 
 void PrintPageTable(page_table_entry PageTable[],int NumberOfPages) {
 
@@ -31,6 +37,8 @@ PageTable[Index].Requested);
 
 }
 
+void SigUsr1(int);
+
 
 int main(int argc,char* argv[]){
 	//menggunakan 2 argumen tambahan, jumlah page dan jumlah frame secara berurutan
@@ -41,8 +49,10 @@ int main(int argc,char* argv[]){
 	int jpage = atoi(argv[1]);
 	int jframe = atoi(argv[2]);
 	int pidOS = getpid();
+	printf("The shared memory key (PID) is %d\n",pidOS);
+	printf("Initializing page table\n");
 	int shmid;
-	int NumberOfPages = jpage;
+	NumberOfPages = jpage;
 	printf("from OS %d\n",NumberOfPages);
 	//get shared memory id
 	if ((shmid = shmget(pidOS, NumberOfPages*sizeof(page_table_entry), IPC_CREAT|0666)) < 0) {
@@ -57,7 +67,7 @@ int main(int argc,char* argv[]){
         exit(1);
     }
     //inisialisasi page table
-    page_table_pointer s = shm;
+    s = shm;
     int i;
     for (i=0;i<NumberOfPages;i++){
 		s[i].Valid = 0;
@@ -65,6 +75,7 @@ int main(int argc,char* argv[]){
 		s[i].Dirty = 0;
 		s[i].Requested = 0;
 	}
+	printf("Page table initialized\n");
 	//inisialisasi command untuk menjalankan MMU
 	char* command = "./MMU.ls ";
 	char* buffer = malloc(100);
@@ -75,7 +86,37 @@ int main(int argc,char* argv[]){
 	sprintf(PID, "%d", pidOS);
 	strcat(buffer,PID);
 	printf("%s\n",buffer);
-	system(buffer);
-	
+	//system(buffer);
+	signal(SIGUSR1,SigUsr1);
+	while(!(finished)) 
+	{
+	  signal(SIGUSR1,SigUsr1);
+	}
+	printf("from OS\n");
 	return 0;
+}
+
+void SigUsr1(int useless){
+	short int found = false;
+	int i=0;
+	int pidMMU;
+	for (i=0;i<NumberOfPages;i++){
+		if (s[i].Requested != 0){
+			found = true;
+			pidMMU = s[i].Requested;
+			printf("Process %d has requested page %d\n",pidMMU,i);
+			s[i].Valid = 1;
+			s[i].Requested = 0;
+			s[i].Frame = frame;
+			printf("Put it in free frame %d\n",frame);
+			frame++;
+			//s[i].Dirty = 1;
+			printf("Unblock MMU\n");
+			sleep(1);
+			kill(pidMMU,SIGCONT);
+			break;
+		}
+	}
+	if (!found)
+		finished = true;
 }
