@@ -23,7 +23,6 @@ void ContinueHandler(int Signal) {
 void PrintPageTable(page_table_entry PageTable[],int NumberOfPages) {
 
     int Index;
-	printf("%d\n",NumberOfPages);
     for (Index =  0;Index < NumberOfPages;Index++) {
         printf("%2d: Valid=%1d Frame=%2d Dirty=%1d Requested=%1d\n",Index,
 PageTable[Index].Valid,PageTable[Index].Frame,PageTable[Index].Dirty,
