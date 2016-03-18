@@ -31,7 +31,10 @@ Address push_back(List*,Infotype);
 //push int ke list, kembalikan address dari alokasi
 
 void pop_front(List*,Infotype*);
-//kembalikan first ke Infotype, hilangkan dari list
+//kembalikan first(LRU) ke Infotype, hilangkan dari list
+
+void swap(Address, List*);
+//tukar address dengan last (MRU)
 
 void construct(List*);
 //buat list kosong
