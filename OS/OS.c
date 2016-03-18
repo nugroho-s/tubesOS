@@ -24,7 +24,8 @@ page_table_pointer s;
 int frame = 0;
 int NumberOfPages = 0;
 short int finished = false;
-int disk_access = 0;
+short int full = false;
+List idxPage;
 
 void PrintPageTable(page_table_entry PageTable[],int NumberOfPages) {
 
@@ -86,7 +87,6 @@ int main(int argc,char* argv[]){
 	sprintf(PID, "%d", pidOS);
 	strcat(buffer,PID);
 	printf("%s\n",buffer);
-	//system(buffer);
 	signal(SIGUSR1,SigUsr1);
 	while(!(finished)) 
 	{
@@ -94,7 +94,7 @@ int main(int argc,char* argv[]){
 	}
 	printf("The MMU has finished\n");
 	PrintPageTable(s,NumberOfPages);
-	printf("%d disk access required\n",disk_access);
+	//printf("%d disk access required\n",disk_access);
 	return 0;
 }
 
@@ -112,8 +112,6 @@ void SigUsr1(int useless){
 			s[i].Frame = frame;
 			printf("Put it in free frame %d\n",frame);
 			frame++;
-			//s[i].Dirty = 1;
-			disk_access++;
 			sleep(1);
 			printf("Unblock MMU\n");
 			kill(pidMMU,SIGCONT);

@@ -1,3 +1,4 @@
+//!shared memory untuk disk access
 //-----------------------------------------------------------------------------
 #include <stdio.h>
 #include <unistd.h>
@@ -12,6 +13,9 @@
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include "PageTable.h"
+
+int disk_access = 0;
+
 //-----------------------------------------------------------------------------
 //----Used for delayed tasks
 void ContinueHandler(int Signal) {
@@ -32,7 +36,6 @@ PageTable[Index].Requested);
 }
 //-----------------------------------------------------------------------------
 int main(int argc,char *argv[]) {
-
     int SharedMemoryKey;
     int NumberOfPages;
     int OSPID;
@@ -68,6 +71,7 @@ NumberOfPages*sizeof(page_table_entry),0666)) == -1 ||
     printf("\n");
 //----Deal with the page requests
     for (RSIndex = 2;RSIndex < argc-1;RSIndex++) {
+		disk_access++;
         Mode = argv[RSIndex][0];
         Page = atoi(&argv[RSIndex][1]);
 //----Check that it's within the process
@@ -111,6 +115,7 @@ Mode,Page);
 
 //----Alert OS
     printf("Tell OS that I'm finished\n");
+    printf("Disk Access: %d\n",disk_access);
 //----Sleep a bit to allow OS to get ready for another signal
     sleep(1);
     if (kill(OSPID,SIGUSR1) == -1) {
