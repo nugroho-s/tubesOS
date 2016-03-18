@@ -19,7 +19,7 @@ typedef struct {
  
 #define First(L) (L).first
 #define Next(P) (P)->next
-#define Prev(P) (P)->prev
+#define Prev(X) (X)->prev
 #define Info(P) (P)->info
 #define Last(L) (L).last
 
@@ -30,7 +30,7 @@ void dealokasi (Address*);
 Address push_back(List*,Infotype);
 //push int ke list, kembalikan address dari alokasi
 
-void pop_front(List*,Infotype*);
+void popfront(List *L,Infotype *X);
 //kembalikan first(LRU) ke Infotype, hilangkan dari list
 
 void swap(Address, List*);
